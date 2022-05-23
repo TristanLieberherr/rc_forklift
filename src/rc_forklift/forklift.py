@@ -24,28 +24,28 @@ class Forklift:
         self._driving_motor.stop()
         self._steering_motor.center()
 
-    def forward(self):
+    def drive_forward(self):
         self._driving_motor.forward()
 
-    def reverse(self):
+    def drive_reverse(self):
         self._driving_motor.reverse()
 
-    def stop(self):
+    def drive_stop(self):
         self._driving_motor.stop()
 
-    def center(self):
+    def steer_center(self):
         self._steering_motor.center()
 
-    def right(self):
+    def steer_right(self):
         self._steering_motor.right()
 
-    def left(self):
+    def steer_left(self):
         self._steering_motor.left()
 
-    def up(self):
+    def lift_up(self):
         self._lifting_motor.forward()
         
-    def down(self):
+    def lift_down(self):
         self._lifting_motor.reverse()
 
     def lift_stop(self):
