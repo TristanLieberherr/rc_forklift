@@ -25,7 +25,6 @@ def ccw(A, B, C) -> bool:
 def intersect(p1, p2, p3, p4) -> bool:
     return ccw(p1, p3, p4) != ccw(p2, p3, p4) and ccw(p1, p2, p3) != ccw(p1, p2, p4)
 
-
 class Segment:
     def __init__(self, p1, p2):
         self._p1 = np.array(p1)

@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 import rospy
 import sys
-import threading
 import pygame
-import math
 import matplotlib.pyplot as plt
 import numpy as np
 from std_msgs.msg import String
 from sensor_msgs.msg import LaserScan
 from rc_forklift.perimeter import Perimeter
+
 
 
 class KeyboardController:
@@ -24,7 +23,6 @@ class KeyboardController:
 
     def is_pressed(self, key) -> bool:
         return self.keys[key]
-
 
 DRIVE_STOP      = "DRIVE_STOP"
 DRIVE_FORWARD   = "DRIVE_FORWARD"
@@ -53,7 +51,6 @@ perimeter = Perimeter()
 perimeter.create_segment([-0.2, 0.2], [-0.2, 0.4])
 perimeter.create_segment([-0.2, 0.4], [0.2, 0.4])
 perimeter.create_segment([0.2, 0.2], [0.2, 0.4])
-
 
 def animate():
     ax.clear()
@@ -107,7 +104,6 @@ def main():
                 pub.publish(LIFT_DOWN)
             else:
                 pub.publish(LIFT_STOP)
-
 
 if __name__ == '__main__':
     try:

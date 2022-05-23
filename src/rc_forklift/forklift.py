@@ -1,12 +1,13 @@
 import RPi.GPIO as GPIO
 from smbus2 import SMBus
-from dc_motor import DCMotor
-from servo_motor import ServoMotor
+from rc_forklift.dc_motor import DCMotor
+from rc_forklift.servo_motor import ServoMotor
 
 
 
 class Forklift:
     def __init__(self):
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)
         self._bus = SMBus(1)
         self._driving_motor = DCMotor(35, 37)
