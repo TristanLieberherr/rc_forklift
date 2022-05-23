@@ -160,6 +160,7 @@ include_directories(
 catkin_install_python(PROGRAMS
   scripts/rc_client.py
   scripts/rc_server.py
+  scripts/lidar_viewer.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

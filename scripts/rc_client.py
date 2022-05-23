@@ -40,6 +40,8 @@ def main():
     pub = rospy.Publisher('controls', String, queue_size=10)
     rospy.Subscriber('scan', LaserScan, perimeter.update)
     while not perimeter.is_ready(): pass
+    pygame.init()
+    display = pygame.display.set_mode((300, 300))
     while not rospy.is_shutdown():
         for event in pygame.event.get():
             keyboard.update(event)
@@ -73,8 +75,6 @@ def main():
 
 if __name__ == '__main__':
     try:
-        pygame.init()
-        display = pygame.display.set_mode((300, 300))
         main()
     except rospy.ROSInterruptException:
         pass
