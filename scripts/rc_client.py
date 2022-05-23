@@ -2,8 +2,6 @@
 import rospy
 import sys
 import pygame
-import matplotlib.pyplot as plt
-import numpy as np
 from std_msgs.msg import String
 from sensor_msgs.msg import LaserScan
 from rc_forklift.perimeter import Perimeter
@@ -34,47 +32,15 @@ LIFT_STOP       = "LIFT_STOP"
 LIFT_UP         = "LIFT_UP"
 LIFT_DOWN       = "LIFT_DOWN"
 
-display_angle_min = 210/180*np.pi
-display_angle_max = 330/180*np.pi
-display_range = 1
-forklift_front = 0.25
-forklift_back = 0.12
-forklift_side = 0.08
-forklift_x = np.array([-forklift_side, -forklift_side, forklift_side, forklift_side, -forklift_side])
-forklift_y = np.array([-forklift_back, forklift_front, forklift_front, -forklift_back, -forklift_back])
-forklift_thetas = np.arctan2(forklift_y, forklift_x)
-forklift_ranges = np.sqrt(forklift_x**2+forklift_y**2)
-fig = plt.figure()
-ax = fig.add_subplot(projection='polar')
 keyboard = KeyboardController()
 perimeter = Perimeter()
-perimeter.create_segment([-0.2, 0.2], [-0.2, 0.4])
-perimeter.create_segment([-0.2, 0.4], [0.2, 0.4])
-perimeter.create_segment([0.2, 0.2], [0.2, 0.4])
-
-def animate():
-    ax.clear()
-    ax.set_ylim(0, display_range)
-    thetas = perimeter.get_thetas()
-    perimeter.get_lock().acquire()
-    ax.plot(thetas, perimeter.get_scan_ranges(), ',r')
-    color = 'r' if perimeter.is_trespassing() else 'g'
-    ax.plot(thetas, perimeter.get_ranges(), color=color, linewidth='0.5')
-    perimeter.get_lock().release()
-    ax.plot([display_angle_min]*2, [0, display_range], 'b', linewidth='0.5')
-    ax.plot([display_angle_max]*2, [0, display_range], 'b', linewidth='0.5')
-    ax.plot(forklift_thetas, forklift_ranges, 'y')
-    plt.draw()
-    plt.pause(0.0001)
 
 def main():
     rospy.init_node('forklift_client', anonymous=True)
     pub = rospy.Publisher('controls', String, queue_size=10)
     rospy.Subscriber('scan', LaserScan, perimeter.update)
     while not perimeter.is_ready(): pass
-    plt.show(block=False)
     while not rospy.is_shutdown():
-        animate()
         for event in pygame.event.get():
             keyboard.update(event)
             if event.type == pygame.QUIT:

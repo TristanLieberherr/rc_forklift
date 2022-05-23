@@ -4,6 +4,14 @@ import numpy as np
 
 
 
+_forklift_front = 0.25
+_forklift_back = 0.12
+_forklift_side = 0.08
+_forklift_x = np.array([-_forklift_side, -_forklift_side, _forklift_side, _forklift_side, -_forklift_side])
+_forklift_y = np.array([-_forklift_back, _forklift_front, _forklift_front, -_forklift_back, -_forklift_back])
+FORKLIFT_THETAS = np.arctan2(_forklift_y, _forklift_x)
+FORKLIFT_RANGES = np.sqrt(_forklift_x**2+_forklift_y**2)
+
 def perp(a):
     b = np.empty_like(a)
     b[0] = -a[1]
@@ -62,6 +70,10 @@ class Perimeter:
         self._ranges = None
         self._scan_ranges = None
         self._lock = threading.Lock()
+        # To keep the same shape among instances
+        self.create_segment([-0.2, 0.2], [-0.2, 0.4])
+        self.create_segment([-0.2, 0.4], [0.2, 0.4])
+        self.create_segment([0.2, 0.2], [0.2, 0.4])
 
     def init(self, scan):
         length = len(scan.ranges)

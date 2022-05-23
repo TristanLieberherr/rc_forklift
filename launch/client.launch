@@ -1,3 +1,4 @@
 <launch>
-  <node pkg="rc_forklift" type="rc_client.py" name="sus" />
+  <node pkg="rc_forklift" type="rc_client.py" name="rc_client" />
+  <node pkg="rc_forklift" type="lidar_viever.py" name="lidar_viewer" />
 </launch>
