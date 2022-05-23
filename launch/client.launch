@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="rc_forklift" type="rc_client.py" name="sus" />
+</launch>

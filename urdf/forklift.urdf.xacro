@@ -1,0 +1,428 @@
+<?xml version="1.0"?>
+<robot name="forklift"
+  xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:property name="pi" value="3.1415" />
+  <xacro:property name="wheel_diameter" value="0.075"/>
+  <xacro:property name="wheel_width" value="0.025"/>
+
+  <xacro:property name="base_width" value="0.11"/>
+  <xacro:property name="base_length" value="0.22"/>
+  <xacro:property name="base_height" value="0.065"/>
+
+  <xacro:property name="body_width" value="${base_width+2*wheel_width}"/>
+  <xacro:property name="body_length" value="0.29"/>
+  <xacro:property name="body_height" value="0.01"/>
+
+  <xacro:property name="rear_body_width" value="${body_width}"/>
+  <xacro:property name="rear_body_length" value="0.19"/>
+  <xacro:property name="rear_body_height" value="0.07"/>
+
+  <xacro:property name="roof_width" value="0.135"/>
+  <xacro:property name="roof_length" value="0.13"/>
+  <xacro:property name="roof_height" value="0.01"/>
+
+  <xacro:property name="LIDAR_width" value="0.045"/>
+  <xacro:property name="LIDAR_length" value="0.045"/>
+  <xacro:property name="LIDAR_height" value="0.04"/>
+
+  <xacro:property name="rear_beam_width" value="0.01"/>
+  <xacro:property name="rear_beam_length" value="0.015"/>
+  <xacro:property name="rear_beam_height" value="0.15"/>
+
+  <xacro:property name="front_beam_width" value="0.01"/>
+  <xacro:property name="front_beam_length" value="0.01"/>
+  <xacro:property name="front_beam_height" value="0.21"/>
+
+  <xacro:property name="front_panel_width" value="0.13"/>
+  <xacro:property name="front_panel_length" value="0.035"/>
+  <xacro:property name="front_panel_height" value="0.08"/>
+
+  <xacro:property name="outer_mast_base_width" value="0.062"/>
+  <xacro:property name="outer_mast_base_length" value="0.028"/>
+  <xacro:property name="outer_mast_base_height" value="0.012"/>
+
+  <xacro:property name="outer_mast_top_width" value="${outer_mast_base_width+2*outer_mast_width}"/>
+  <xacro:property name="outer_mast_top_length" value="0.012"/>
+  <xacro:property name="outer_mast_top_height" value="0.02"/>
+
+  <xacro:property name="outer_mast_width" value="0.012"/>
+  <xacro:property name="outer_mast_length" value="${outer_mast_base_length}"/>
+  <xacro:property name="outer_mast_height" value="0.265"/>
+
+  <xacro:property name="inner_mast_base_width" value="${outer_mast_base_width-2*outer_mast_width}"/>
+  <xacro:property name="inner_mast_base_length" value="0.022"/>
+  <xacro:property name="inner_mast_base_height" value="0.01"/>
+
+  <xacro:property name="inner_mast_top_width" value="${inner_mast_base_width}"/>
+  <xacro:property name="inner_mast_top_length" value="${inner_mast_base_length}"/>
+  <xacro:property name="inner_mast_top_height" value="0.014"/>
+
+  <xacro:property name="inner_mast_width" value="0.008"/>
+  <xacro:property name="inner_mast_length" value="${inner_mast_base_length}"/>
+  <xacro:property name="inner_mast_height" value="0.255"/>
+
+  <xacro:property name="fork_base_width" value="0.046"/>
+  <xacro:property name="fork_base_length" value="0.01"/>
+  <xacro:property name="fork_base_height" value="0.04"/>
+
+  <xacro:property name="fork_plate_width" value="0.14"/>
+  <xacro:property name="fork_plate_length" value="0.01"/>
+  <xacro:property name="fork_plate_height" value="0.125"/>
+
+  <xacro:property name="fork1_width" value="0.012"/>
+  <xacro:property name="fork1_length" value="0.004"/>
+  <xacro:property name="fork1_height" value="0.09"/>
+
+  <xacro:property name="fork2_width" value="${fork1_width}"/>
+  <xacro:property name="fork2_length" value="0.165"/>
+  <xacro:property name="fork2_height" value="${fork1_length}"/>
+
+
+
+  <material name="black">
+    <color rgba="0 0 0 1"/>
+  </material>
+  <material name="orange">
+    <color rgba="1 0.65 0 1"/>
+  </material>
+
+
+
+  <xacro:macro name="wheel" params="name front right">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <cylinder length="${wheel_width}" radius="${wheel_diameter/2}"/>
+        </geometry>
+        <material name="black"/>
+      </visual>
+    </link>
+    <joint name="base_to_${name}" type="continuous">
+      <parent link="base_link"/>
+      <child link="${name}"/>
+      <origin rpy="0 ${pi/2} 0" xyz="${front*(base_width/2+wheel_width/2)} ${right*(base_length/2)} ${0.02-base_height/2}"/>
+      <axis xyz="0 0 1"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="rear_beam" params="name right">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <box size="${rear_beam_width} ${rear_beam_length} ${rear_beam_height}"/>
+        </geometry>
+        <material name="black"/>
+        <origin rpy="0.1 ${right*(-0.08)} 0" xyz="${right*(roof_width/2)} ${roof_length/2} -${rear_beam_height/2}"/>
+      </visual>
+    </link>
+    <joint name="roof_to_${name}" type="fixed">
+      <parent link="roof"/>
+      <child link="${name}"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="front_beam" params="name right">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <box size="${front_beam_width} ${front_beam_length} ${front_beam_height}"/>
+        </geometry>
+        <material name="black"/>
+        <origin rpy="-0.2 ${right*(-0.07)} 0" xyz="${right*(roof_width/2)} -${roof_length/2} -${front_beam_height/2}"/>
+      </visual>
+    </link>
+    <joint name="roof_to_${name}" type="fixed">
+      <parent link="roof"/>
+      <child link="${name}"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="outer_mast" params="name right">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <box size="${outer_mast_width} ${outer_mast_length} ${outer_mast_height}"/>
+        </geometry>
+        <material name="black"/>
+        <origin xyz="${right*(outer_mast_base_width/2+outer_mast_width/2)} 0 ${outer_mast_height/2-outer_mast_base_height/2}"/>
+      </visual>
+    </link>
+    <joint name="outer_mast_base_to_${name}" type="fixed">
+      <parent link="outer_mast_base"/>
+      <child link="${name}"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="inner_mast" params="name right">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <box size="${inner_mast_width} ${inner_mast_length} ${inner_mast_height}"/>
+        </geometry>
+        <material name="black"/>
+        <origin xyz="${right*(inner_mast_base_width/2+inner_mast_width/2)} 0 ${inner_mast_height/2-inner_mast_base_height/2}"/>
+      </visual>
+    </link>
+    <joint name="inner_mast_base_to_${name}" type="fixed">
+      <parent link="inner_mast_base"/>
+      <child link="${name}"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:macro name="fork" params="name right">
+    <link name="${name}1">
+      <visual>
+        <geometry>
+          <box size="${fork1_width} ${fork1_length} ${fork1_height}"/>
+        </geometry>
+        <material name="black"/>
+        <origin xyz="${right*(fork_plate_width/2-fork1_width/2-0.005)} -${fork_plate_length/2+fork1_length/2} ${fork1_height/2-fork_plate_height/2-0.03}"/>
+      </visual>
+    </link>
+    <joint name="fork_plate_to_${name}1" type="fixed">
+      <parent link="fork_plate"/>
+      <child link="${name}1"/>
+    </joint>
+
+    <link name="${name}2">
+      <visual>
+        <geometry>
+          <box size="${fork2_width} ${fork2_length} ${fork2_height}"/>
+        </geometry>
+        <material name="black"/>
+        <origin rpy="-0.015 0 0" xyz="${right*(fork_plate_width/2-fork2_width/2-0.005)} -${fork_plate_length/2+fork2_length/2} ${fork2_height/2-fork_plate_height/2-0.03}"/>
+      </visual>
+    </link>
+    <joint name="fork_plate_to_${name}2" type="fixed">
+      <parent link="fork_plate"/>
+      <child link="${name}2"/>
+    </joint>
+  </xacro:macro>
+
+
+
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="${base_width} ${base_length} ${base_height}"/>
+      </geometry>
+      <material name="orange"/>
+    </visual>
+  </link>
+
+  <link name="body">
+    <visual>
+      <geometry>
+        <box size="${body_width} ${body_length} ${body_height}"/>
+      </geometry>
+      <material name="orange"/>
+    </visual>
+  </link>
+  <joint name="base_to_body" type="fixed">
+    <parent link="base_link"/>
+    <child link="body"/>
+    <origin xyz="0 0 ${base_height/2+body_height/2}"/>
+  </joint>
+
+  <link name="base_fill1">
+    <visual>
+      <geometry>
+        <box size="${body_width} ${base_length-wheel_diameter-0.02} ${base_height}"/>
+      </geometry>
+      <material name="orange"/>
+    </visual>
+  </link>
+  <joint name="base_to_base_fill1" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_fill1"/>
+  </joint>
+
+  <link name="base_fill2">
+    <visual>
+      <geometry>
+        <box size="${base_width} ${body_length} ${base_height}"/>
+      </geometry>
+      <material name="orange"/>
+    </visual>
+  </link>
+  <joint name="base_to_base_fill2" type="fixed">
+    <parent link="base_link"/>
+    <child link="base_fill2"/>
+  </joint>
+
+  <link name="base_fill3">
+    <visual>
+      <geometry>
+        <box size="${base_width} ${rear_body_length} ${base_height}"/>
+      </geometry>
+      <material name="orange"/>
+      <origin xyz="0 0.08 -${rear_body_height/2}"/>
+    </visual>
+  </link>
+  <joint name="body_to_base_fill3" type="fixed">
+    <parent link="body"/>
+    <child link="base_fill3"/>
+  </joint>
+
+  <link name="rear_body">
+    <visual>
+      <geometry>
+        <box size="${rear_body_width} ${rear_body_length} ${rear_body_height}"/>
+      </geometry>
+      <material name="orange"/>
+      <origin xyz="0 0.08 ${rear_body_height/2-body_height/2}"/>
+    </visual>
+  </link>
+  <joint name="body_to_rear_body" type="fixed">
+    <parent link="body"/>
+    <child link="rear_body"/>
+  </joint>
+
+  <link name="roof">
+    <visual>
+      <geometry>
+        <box size="${roof_width} ${roof_length} ${roof_height}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="body_to_roof" type="fixed">
+    <parent link="body"/>
+    <child link="roof"/>
+    <origin xyz="0 0 0.21"/>
+  </joint>
+
+  <link name="LIDAR">
+    <visual>
+      <geometry>
+        <box size="${LIDAR_width} ${LIDAR_length} ${LIDAR_height}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="body_to_roof" type="fixed">
+    <parent link="body"/>
+    <child link="roof"/>
+    <origin xyz="0 0 0.21"/>
+  </joint>
+
+  <link name="front_panel">
+    <visual>
+      <geometry>
+        <box size="${front_panel_width} ${front_panel_length} ${front_panel_height}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="body_to_front_panel" type="fixed">
+    <parent link="body"/>
+    <child link="front_panel"/>
+    <origin rpy="-0.1 0 0" xyz="0 -0.08 ${body_height/2+front_panel_height/2-0.01}"/>
+  </joint>
+
+  <link name="outer_mast_base">
+    <visual>
+      <geometry>
+        <box size="${outer_mast_base_width} ${outer_mast_base_length} ${outer_mast_base_height}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="body_to_outer_mast_base" type="fixed">
+    <parent link="body"/>
+    <child link="outer_mast_base"/>
+    <origin xyz="0 -${body_length/2+outer_mast_base_length/2} -${base_height*3/4}"/>
+  </joint>
+
+  <link name="outer_mast_top">
+    <visual>
+      <geometry>
+        <box size="${outer_mast_top_width} ${outer_mast_top_length} ${outer_mast_top_height}"/>
+      </geometry>
+      <material name="black"/>
+      <origin xyz="0 ${outer_mast_base_length/2+outer_mast_top_length/2} ${outer_mast_height-outer_mast_top_height/2-outer_mast_base_height/2}"/>
+    </visual>
+  </link>
+  <joint name="outer_mast_base_to_outer_mast_top" type="fixed">
+    <parent link="outer_mast_base"/>
+    <child link="outer_mast_top"/>
+
+  </joint>
+
+  <link name="inner_mast_base">
+    <visual>
+      <geometry>
+        <box size="${inner_mast_base_width} ${inner_mast_base_length} ${inner_mast_base_height}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="outer_mast_base_to_inner_mast_base" type="prismatic">
+    <parent link="outer_mast_base"/>
+    <child link="inner_mast_base"/>
+    <origin xyz="0 ${inner_mast_base_length/2-outer_mast_base_length/2} ${inner_mast_base_height/2+outer_mast_base_height/2}"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="0" upper="0.175" velocity="0.5"/>
+  </joint>
+
+  <link name="inner_mast_top">
+    <visual>
+      <geometry>
+        <box size="${inner_mast_top_width} ${inner_mast_top_length} ${inner_mast_top_height}"/>
+      </geometry>
+      <material name="black"/>
+      <origin xyz="0 0 ${inner_mast_height-inner_mast_top_height/2-inner_mast_base_height/2}"/>
+    </visual>
+  </link>
+  <joint name="inner_mast_base_to_inner_mast_top" type="fixed">
+    <parent link="inner_mast_base"/>
+    <child link="inner_mast_top"/>
+  </joint>
+
+  <link name="fork_base">
+    <visual>
+      <geometry>
+        <box size="${fork_base_width} ${fork_base_length} ${fork_base_height}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="outer_mast_base_to_fork_base" type="prismatic">
+    <parent link="inner_mast_base"/>
+    <child link="fork_base"/>
+    <origin xyz="0 ${(fork_base_length-inner_mast_base_length)/2} ${fork_base_height/2+inner_mast_base_height/2}"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="0" upper="0.175" velocity="0.5"/>
+  </joint>
+
+  <link name="fork_plate">
+    <visual>
+      <geometry>
+        <box size="${fork_plate_width} ${fork_plate_length} ${fork_plate_height}"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+  </link>
+  <joint name="fork_base_to_fork_plate" type="fixed">
+    <parent link="fork_base"/>
+    <child link="fork_plate"/>
+    <origin xyz="0 0 ${fork_plate_height/2-fork_base_height/2-0.015}"/>
+  </joint>
+
+
+
+  <xacro:wheel name="right_front_wheel" front="1" right="1"/>
+  <xacro:wheel name="left_front_wheel" front="1" right="-1"/>
+  <xacro:wheel name="right_rear_wheel" front="-1" right="1"/>
+  <xacro:wheel name="left_rear_wheel" front="-1" right="-1"/>
+  <xacro:rear_beam name="right_rear_beam" right="1"/>
+  <xacro:rear_beam name="left_rear_beam" right="-1"/>
+  <xacro:front_beam name="right_front_beam" right="1"/>
+  <xacro:front_beam name="left_front_beam" right="-1"/>
+  <xacro:outer_mast name="right_outer_mast" right="1"/>
+  <xacro:outer_mast name="left_outer_mast" right="-1"/>
+  <xacro:inner_mast name="right_inner_mast" right="1"/>
+  <xacro:inner_mast name="left_inner_mast" right="-1"/>
+  <xacro:fork name="right_fork" right="1"/>
+  <xacro:fork name="left_fork" right="-1"/>
+</robot>

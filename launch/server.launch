@@ -1,0 +1,6 @@
+<launch>
+  <group>
+    <node pkg="rc_forklift" name="rc_server" type="rc_server.py"/>
+    <node pkg="urg_node" name="urg_node" type="urg_node"/>
+  </group>
+</launch>
