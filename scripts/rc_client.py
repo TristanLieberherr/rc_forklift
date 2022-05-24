@@ -2,6 +2,7 @@
 import rospy
 import sys
 import pygame
+import json
 from std_msgs.msg import String
 from sensor_msgs.msg import LaserScan
 from rc_forklift.perimeter import Perimeter
@@ -22,19 +23,6 @@ class KeyboardController:
     def is_pressed(self, key) -> bool:
         return self.keys[key]
 
-DRIVE_STOP      = "DRIVE_STOP"
-DRIVE_FORWARD   = "DRIVE_FORWARD"
-DRIVE_REVERSE   = "DRIVE_REVERSE"
-STEER_CENTER    = "STEER_CENTER"
-STEER_RIGHT     = "STEER_RIGHT"
-STEER_LEFT      = "STEER_LEFT"
-LIFT_STOP       = "LIFT_STOP"
-LIFT_UP         = "LIFT_UP"
-LIFT_DOWN       = "LIFT_DOWN"
-
-keyboard = KeyboardController()
-perimeter = Perimeter()
-
 def main():
     rospy.init_node('forklift_client', anonymous=True)
     pub = rospy.Publisher('controls', String, queue_size=10)
@@ -42,6 +30,11 @@ def main():
     while not perimeter.is_ready(): pass
     pygame.init()
     display = pygame.display.set_mode((300, 300))
+    command = {
+        'drive': 'stop',
+        'steer': 'center',
+        'lift': 'stop'
+    }
     while not rospy.is_shutdown():
         for event in pygame.event.get():
             keyboard.update(event)
@@ -50,30 +43,31 @@ def main():
                 sys.exit()
 
             if keyboard.is_pressed(pygame.K_w) and not keyboard.is_pressed(pygame.K_s):
-                if perimeter.is_trespassing():
-                    pub.publish(DRIVE_STOP)
-                else:
-                    pub.publish(DRIVE_FORWARD)
+                command['drive'] = 'forward'
             elif not keyboard.is_pressed(pygame.K_w) and keyboard.is_pressed(pygame.K_s):
-                pub.publish(DRIVE_REVERSE)
+                command['drive'] = 'reverse'
             else:
-                pub.publish(DRIVE_STOP)
+                command['drive'] = 'stop'
 
             if keyboard.is_pressed(pygame.K_a) and not keyboard.is_pressed(pygame.K_d):
-                pub.publish(STEER_LEFT)
+                command['steer'] = 'left'
             elif not keyboard.is_pressed(pygame.K_a) and keyboard.is_pressed(pygame.K_d):
-                pub.publish(STEER_RIGHT)
+                command['steer'] = 'right'
             else:
-                pub.publish(STEER_CENTER)
+                command['steer'] = 'center'
 
             if keyboard.is_pressed(pygame.K_UP) and not keyboard.is_pressed(pygame.K_DOWN):
-                pub.publish(LIFT_UP)
+                command['lift'] = 'up'
             elif not keyboard.is_pressed(pygame.K_UP) and keyboard.is_pressed(pygame.K_DOWN):
-                pub.publish(LIFT_DOWN)
+                command['lift'] = 'down'
             else:
-                pub.publish(LIFT_STOP)
+                command['lift'] = 'stop'
+            pub.publish(json.dumps(command))
+
 
 if __name__ == '__main__':
+    keyboard = KeyboardController()
+    perimeter = Perimeter()
     try:
         main()
     except rospy.ROSInterruptException:
