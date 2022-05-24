@@ -5,7 +5,7 @@ from rc_forklift.servo_motor import ServoMotor
 
 
 
-class Forklift:
+class ForkliftDriver:
     def __init__(self):
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BOARD)

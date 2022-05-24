@@ -3,7 +3,7 @@ import rospy
 import RPi.GPIO as GPIO     #https://raspberrypi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-try-running-as-root
 from std_msgs.msg import String
 from sensor_msgs.msg import LaserScan
-from rc_forklift.forklift import Forklift
+from rc_forklift.forklift_driver import ForkliftDriver
 from rc_forklift.perimeter import Perimeter
 GPIO.setmode(GPIO.BOARD)
 
@@ -46,7 +46,7 @@ def callback(data):
     elif control == LIFT_DOWN:
         forklift.lift_down()
 
-def listen():
+def main():
     rospy.init_node('forklift_server', anonymous=True)
     rospy.Subscriber('controls', String, callback)
     rospy.Subscriber('scan', LaserScan, perimeter.update)
@@ -55,5 +55,8 @@ def listen():
     rospy.spin()
 
 if __name__ == '__main__':
-    forklift = Forklift()
-    listen()
+    try:
+        forklift = ForkliftDriver()
+        main()
+    except rospy.ROSInterruptException:
+        pass
