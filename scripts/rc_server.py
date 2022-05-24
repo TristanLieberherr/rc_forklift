@@ -13,8 +13,11 @@ GPIO.setmode(GPIO.BOARD)
 
 
 
-ready = False
-command = None
+command = {
+    'drive': 'stop',
+    'steer': 'center',
+    'lift': 'stop'
+}
 
 
 def callback(data):
@@ -22,14 +25,13 @@ def callback(data):
     lock.acquire()
     command = json.loads(data)
     lock.release()
-    ready = True
 
 
 def main():
     rospy.init_node('forklift_server', anonymous=True)
     rospy.Subscriber('controls', String, callback)
     rospy.Subscriber('scan', LaserScan, perimeter.update)
-    while not (perimeter.is_ready() and ready): pass
+    while not perimeter.is_ready(): pass
     print("Server ready")
 
 
@@ -58,12 +60,12 @@ def main():
             forklift.lift_stop()
 
         
-        lock.acquire()
-        command['drive'] = 'stop'
-        command['steer'] = 'center'
-        command['lift'] = 'stop'
-        lock.release()
-        sleep(0.1)
+        # lock.acquire()
+        # command['drive'] = 'stop'
+        # command['steer'] = 'center'
+        # command['lift'] = 'stop'
+        # lock.release()
+        # sleep(0.1)
 
 
 if __name__ == '__main__':
