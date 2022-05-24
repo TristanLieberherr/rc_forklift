@@ -71,9 +71,11 @@ class Perimeter:
         self._scan_ranges = None
         self._lock = threading.Lock()
         # To keep the same shape among instances
-        self.create_segment([-0.2, 0.2], [-0.2, 0.4])
-        self.create_segment([-0.2, 0.4], [0.2, 0.4])
-        self.create_segment([0.2, 0.2], [0.2, 0.4])
+        box_side = 0.2
+        box_front = 0.45
+        self.create_segment([-box_side, 0.2], [-box_side, box_front])
+        self.create_segment([-box_side, box_front], [box_side, box_front])
+        self.create_segment([box_side, 0.2], [box_side, box_front])
 
     def init(self, scan):
         length = len(scan.ranges)
