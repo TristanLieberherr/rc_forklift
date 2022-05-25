@@ -6,6 +6,12 @@ _LIFT   = 4
 STOP    = 0x00
 FWD     = 0x01
 REV     = 0x02
+# Aliases
+CENTER  = STOP
+LEFT    = FWD
+RIGHT   = REV
+UP      = FWD
+DOWN    = REV
 
 
 
