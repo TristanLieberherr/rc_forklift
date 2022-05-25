@@ -24,15 +24,16 @@ def main():
     while not perimeter.is_ready(): pass
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.bind(("", PORT))
-        s.listen()
+        s.settimeout(None)
         while not rospy.is_shutdown():
+            print("Listening...")
+            s.listen()
             conn, addr = s.accept()
             with conn:
                 print(f"Connected by {addr}")
                 while True:
                     data = conn.recv(1024)
                     if not data: break
-                    print(data)
                     register.set_reg(int.from_bytes(data, 'big'))
 
                     drive = register.get_drive()
