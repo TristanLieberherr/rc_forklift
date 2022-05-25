@@ -66,6 +66,20 @@ def main():
 
 
 if __name__ == '__main__':
+    import socket
+    HOST = "forklift"
+    PORT = 1337
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT))
+    exit()
+
+
+
+
+
+
+
+
     keyboard = KeyboardController()
     perimeter = Perimeter()
     try:
