@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import rospy
 import json
+import socket
 import threading
 import RPi.GPIO as GPIO     #https://raspberrypi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-try-running-as-root
 from std_msgs.msg import String
@@ -17,6 +18,11 @@ command = {
     'lift': 'stop'
 }
 
+def stop():
+    forklift.drive_stop()
+    forklift.steer_center()
+    forklift.lift_stop()
+
 
 def callback(data):
     global command
@@ -29,15 +35,15 @@ def main():
     rospy.init_node('forklift_server', anonymous=True)
     rospy.Subscriber('controls', String, callback)
     rospy.Subscriber('scan', LaserScan, perimeter.update)
+    stop()
     while not perimeter.is_ready(): pass
     print("Server ready")
-
-
-    while not rospy.is_shutdown():
-        if perimeter.is_trespassing():
-            forklift.drive_stop()
-        elif command['drive'] == 'forward':
-            forklift.drive_forward()
+    while not rospy.is_shutdown():      
+        if command['drive'] == 'forward':
+            if perimeter.is_trespassing():
+                 command['drive'] = 'stop'
+            else:
+                forklift.drive_forward()
         elif command['drive'] == 'reverse':
             forklift.drive_reverse()
         else:
@@ -57,13 +63,21 @@ def main():
         else:
             forklift.lift_stop()
 
+
+    PORT = 1337
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("", PORT))
+        s.listen()
+        while not rospy.is_shutdown():
+            stop()
+            conn, addr = s.accept()
+            with conn:
+                print(f"Connected by {addr}")
+                while True:
+                    data = conn.recv(1024)
+                    if not data: break
+                    print(data)
         
-        # lock.acquire()
-        # command['drive'] = 'stop'
-        # command['steer'] = 'center'
-        # command['lift'] = 'stop'
-        # lock.release()
-        # sleep(0.1)
 
 
 if __name__ == '__main__':
@@ -75,6 +89,4 @@ if __name__ == '__main__':
     except rospy.ROSInterruptException:
         pass
     finally:
-        forklift.drive_stop()
-        forklift.steer_center()
-        forklift.lift_stop()
+        stop()
