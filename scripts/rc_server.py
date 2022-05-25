@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from time import sleep
 import rospy
 import json
 import threading
@@ -8,7 +7,6 @@ from std_msgs.msg import String
 from sensor_msgs.msg import LaserScan
 from rc_forklift.forklift_driver import ForkliftDriver
 from rc_forklift.perimeter import Perimeter
-from rc_forklift.signals import SignalManager
 GPIO.setmode(GPIO.BOARD)
 
 
@@ -21,9 +19,9 @@ command = {
 
 
 def callback(data):
-    global command, ready
+    global command
     lock.acquire()
-    command = json.loads(data)
+    command = json.loads(data.data)
     lock.release()
 
 
@@ -35,7 +33,7 @@ def main():
     print("Server ready")
 
 
-    while True:
+    while not rospy.is_shutdown():
         if perimeter.is_trespassing():
             forklift.drive_stop()
         elif command['drive'] == 'forward':
