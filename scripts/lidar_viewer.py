@@ -11,10 +11,8 @@ from rc_forklift.perimeter import Perimeter, FORKLIFT_THETAS, FORKLIFT_RANGES
 display_angle_min = 210/180*np.pi
 display_angle_max = 330/180*np.pi
 display_range = 1
-
 fig = plt.figure()
 ax = fig.add_subplot(projection='polar')
-perimeter = Perimeter()
 
 def animate(i):
     ax.clear()
@@ -36,7 +34,9 @@ def main():
     ani = animation.FuncAnimation(fig, animate, interval=100)
     plt.show()
     
+    
 if __name__ == '__main__':
+    perimeter = Perimeter()
     try:
         main()
     except rospy.ROSInterruptException:
