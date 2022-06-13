@@ -2,7 +2,7 @@
 
 1. Clone the repo in your ROS workspace (http://wiki.ros.org/catkin/Tutorials/using_a_workspace)
 2. Source your workspace
-3. Install dependencies and build the project
+3. Install dependencies and build the project (*rosdep install will try to install the required Python librairies using pip. You may want to create an alias if using pip3*)
   ```bash
   rosdep update
   rosdep install --from-paths ~/forklift_ws/src --ignore-src --rosdistro=${ROS_DISTRO}
