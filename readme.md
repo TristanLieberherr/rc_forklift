@@ -4,7 +4,8 @@
 2. Source your workspace
 3. Install dependencies
   ```bash
-  rosdep install rc_forklift
+  rosdep update
+  rosdep install --from-paths ~/forklift_ws/src --ignore-src --rosdistro=${ROS_DISTRO}
   ```
 4. Set the ROS_MASTER_URI variable to the master's hostname **on both computers**
   ```bash
