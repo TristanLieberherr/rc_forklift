@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 import socket
-import RPi.GPIO as GPIO     #https://raspberrypi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-try-running-as-root
+# import RPi.GPIO as GPIO     #https://raspberrypi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-try-running-as-root
 from sensor_msgs.msg import LaserScan
 from rc_forklift.forklift_driver import ForkliftDriver
 from rc_forklift.perimeter import Perimeter
