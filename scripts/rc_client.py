@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import rospy
 import pygame
 import socket
@@ -21,7 +21,7 @@ def main():
     display = pygame.display.set_mode((300, 300))
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
-        print(f"Connected to {HOST}:{PORT}")
+        print("Connected to {host}:{port}".format(host=HOST, port=PORT))
         while not rospy.is_shutdown():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT: exit()

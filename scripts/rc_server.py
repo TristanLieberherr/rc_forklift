@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import rospy
 import socket
 import RPi.GPIO as GPIO     #https://raspberrypi.stackexchange.com/questions/40105/access-gpio-pins-without-root-no-access-to-dev-mem-try-running-as-root
@@ -30,7 +30,7 @@ def main():
             s.listen()
             conn, addr = s.accept()
             with conn:
-                print(f"Connected by {addr}")
+                print("Connected by {}".format(addr))
                 while True:
                     data = conn.recv(1024)
                     if not data: break
